@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MASLD Risk Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Source Sans 3', 'Segoe UI', sans-serif;
+    --c-bg: #f8fafb;
+    --c-card: #ffffff;
+    --c-accent: #0f5a5e;
+    --c-accent-light: #e6f4f1;
+    --c-border: #d4dde4;
+    --c-text: #1e293b;
+    --c-muted: #64748b;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background: var(--c-bg);
+    font-family: var(--font-body);
+    color: var(--c-text);
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+  .container { max-width: 520px; width: 100%; }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 28px; }
+  .header-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--c-accent); margin-bottom: 6px; }
+  .header h1 { font-family: var(--font-display); font-size: 28px; font-weight: 800; color: var(--c-text); line-height: 1.2; }
+  .header p { font-size: 13px; color: var(--c-muted); margin-top: 8px; line-height: 1.5; }
+
+  /* Card */
+  .card {
+    background: var(--c-card);
+    border-radius: 16px;
+    border: 1px solid var(--c-border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    padding: 28px 24px;
+  }
+
+  /* Sex toggle */
+  .sex-label { font-size: 13px; font-weight: 700; color: var(--c-muted); display: block; margin-bottom: 8px; }
+  .sex-toggle { display: flex; gap: 8px; margin-bottom: 20px; }
+  .sex-btn {
+    flex: 1; padding: 10px 0; border-radius: 10px; border: 1.5px solid var(--c-border);
+    background: transparent; color: var(--c-muted); font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: all 0.15s ease; font-family: var(--font-body);
+  }
+  .sex-btn.active { border-color: var(--c-accent); background: var(--c-accent-light); color: var(--c-accent); }
+
+  /* Input fields */
+  .field { margin-bottom: 14px; }
+  .field-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
+  .field-label { font-size: 13px; font-weight: 700; color: var(--c-muted); }
+  .field-unit { font-size: 11px; color: #94a3b8; }
+  .field input {
+    width: 100%; padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--c-border);
+    font-size: 15px; font-family: var(--font-body); outline: none; transition: border-color 0.15s;
+  }
+  .field input:focus { border-color: var(--c-accent); }
+  input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type=number] { -moz-appearance: textfield; }
+
+  /* Buttons */
+  .buttons { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-calc {
+    flex: 2; padding: 12px 0; border-radius: 12px; border: none;
+    background: #cbd5e1; color: #fff; font-size: 15px; font-weight: 700;
+    cursor: not-allowed; transition: all 0.2s; font-family: var(--font-body);
+  }
+  .btn-calc.enabled { background: var(--c-accent); cursor: pointer; box-shadow: 0 2px 8px rgba(15,90,94,0.25); }
+  .btn-calc.enabled:hover { filter: brightness(1.1); }
+  .btn-reset {
+    flex: 1; padding: 12px 0; border-radius: 12px; border: 1.5px solid var(--c-border);
+    background: transparent; color: var(--c-muted); font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: var(--font-body);
+  }
+
+  /* Result */
+  .result-card {
+    margin-top: 20px; background: var(--c-card); border-radius: 16px;
+    border: 1px solid var(--c-border); box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    padding: 20px 24px; animation: fadeIn 0.3s ease;
+  }
+  .gauge-wrap { text-align: center; padding: 20px 0; }
+  .risk-label { font-size: 18px; font-weight: 700; margin-top: -4px; letter-spacing: 0.5px; }
+  .indices-box {
+    margin-top: 12px; padding: 14px 16px; background: #f1f5f9;
+    border-radius: 10px; font-size: 12px; color: var(--c-muted); line-height: 1.7;
+  }
+  .indices-title { font-weight: 700; color: var(--c-text); margin-bottom: 6px; font-size: 13px; }
+  .indices-row { display: flex; justify-content: space-between; }
+  .indices-val { font-weight: 600; color: var(--c-text); }
+  .disclaimer {
+    margin-top: 14px; padding: 12px 16px; background: #fffbeb;
+    border-radius: 10px; border: 1px solid #fde68a;
+    font-size: 11px; color: #92400e; line-height: 1.6;
+  }
+  .footer { text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8; line-height: 1.6; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-tag">Clinical Risk Calculator</div>
+    <h1>MASLD Risk Prediction</h1>
+    <p>Based on a logistic regression model trained on UK Biobank (n=27,397)<br>using MRI-PDFF–defined MASLD. AUC&nbsp;=&nbsp;0.84.</p>
+  </div>
+
+  <!-- Card -->
+  <div class="card">
+    <label class="sex-label">Sex</label>
+    <div class="sex-toggle">
+      <button class="sex-btn active" id="btn-male" onclick="setSex('male')">♂ Male</button>
+      <button class="sex-btn" id="btn-female" onclick="setSex('female')">♀ Female</button>
+    </div>
+
+    <div class="field">
+      <div class="field-header"><label class="field-label">Age</label><span class="field-unit">years</span></div>
+      <input type="number" id="inp-age" placeholder="e.g. 55" min="18" max="100" oninput="clearResult()">
+    </div>
+    <div class="field">
+      <div class="field-header"><label class="field-label">Height</label><span class="field-unit">cm</span></div>
+      <input type="number" id="inp-height" placeholder="e.g. 170" min="100" max="220" oninput="clearResult()">
+    </div>
+    <div class="field">
+      <div class="field-header"><label class="field-label">Weight</label><span class="field-unit">kg</span></div>
+      <input type="number" id="inp-weight" placeholder="e.g. 75" min="30" max="250" oninput="clearResult()">
+    </div>
+    <div class="field">
+      <div class="field-header"><label class="field-label">Waist Circumference</label><span class="field-unit">cm</span></div>
+      <input type="number" id="inp-waist" placeholder="e.g. 90" min="50" max="180" oninput="clearResult()">
+    </div>
+    <div class="field">
+      <div class="field-header"><label class="field-label">Hip Circumference</label><span class="field-unit">cm</span></div>
+      <input type="number" id="inp-hip" placeholder="e.g. 100" min="50" max="180" oninput="clearResult()">
+    </div>
+
+    <div class="buttons">
+      <button class="btn-calc" id="btn-calc" onclick="calculate()">Calculate Risk</button>
+      <button class="btn-reset" onclick="resetAll()">Reset</button>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="result-card hidden" id="result-card">
+    <div class="gauge-wrap">
+      <svg viewBox="0 0 200 120" width="260" height="160">
+        <defs>
+          <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#22c55e"/>
+            <stop offset="33%" stop-color="#f59e0b"/>
+            <stop offset="66%" stop-color="#ef4444"/>
+            <stop offset="100%" stop-color="#991b1b"/>
+          </linearGradient>
+        </defs>
+        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#e8e8e8" stroke-width="14" stroke-linecap="round"/>
+        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gaugeGrad)" stroke-width="14" stroke-linecap="round"/>
+        <g id="needle">
+          <line x1="100" y1="100" x2="100" y2="32" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="100" cy="100" r="5" fill="#1e293b"/>
+        </g>
+        <text id="pct-text" x="100" y="88" text-anchor="middle" style="font-size:28px;font-weight:800;font-family:var(--font-display)"></text>
+      </svg>
+      <div class="risk-label" id="risk-label"></div>
+    </div>
+    <div class="indices-box">
+      <div class="indices-title">Calculated Indices</div>
+      <div id="indices-list"></div>
+    </div>
+    <div class="disclaimer">
+      <strong>Disclaimer:</strong> This calculator is for research purposes only and should not replace clinical judgment.
+      The model was developed using UK Biobank data and validated on NHANES 2017–2023.
+      MASLD was defined by MRI-PDFF ≥ 5% with ≥ 1 cardiometabolic risk factor.
+    </div>
+  </div>
+
+  <div class="footer">
+    Model: Logistic Regression · Training: UK Biobank (n=27,397) · External validation: NHANES 2017–2023
+    <br>Features: Age, WHR, WHtR, ABSI, RFM · Outcome: MRI-PDFF–defined MASLD
+  </div>
+</div>
+
+<script>
+// ── UKB-trained Logistic Regression coefficients ──
+const MODEL = {
+  intercept: -0.41134891333241397,
+  coefs: { age: -0.012757, WHR: 0.87471, WHtR: 1.325731, ABSI: -0.746081, RFM: 0.02564 },
+  scaler: {
+    mean: { age: 63.9359, WHR: 0.8689, WHtR: 0.5197, ABSI: 0.07625, RFM: 31.4085 },
+    std:  { age: 7.7412, WHR: 0.08838, WHtR: 0.07056, ABSI: 0.005560, RFM: 7.1080 },
+  },
+};
+
+let currentSex = 'male';
+
+function sigmoid(z) { return 1 / (1 + Math.exp(-z)); }
+
+function setSex(s) {
+  currentSex = s;
+  document.getElementById('btn-male').className  = 'sex-btn' + (s === 'male'  ? ' active' : '');
+  document.getElementById('btn-female').className = 'sex-btn' + (s === 'female' ? ' active' : '');
+  clearResult();
+}
+
+function getVal(id) { return parseFloat(document.getElementById(id).value) || 0; }
+
+function clearResult() {
+  document.getElementById('result-card').classList.add('hidden');
+  updateCalcButton();
+}
+
+function updateCalcButton() {
+  const ids = ['inp-age','inp-height','inp-weight','inp-waist','inp-hip'];
+  const allFilled = ids.every(id => { const v = parseFloat(document.getElementById(id).value); return v > 0; });
+  const btn = document.getElementById('btn-calc');
+  btn.className = 'btn-calc' + (allFilled ? ' enabled' : '');
+}
+
+// Attach input listeners for button state
+document.querySelectorAll('.field input').forEach(inp => {
+  inp.addEventListener('input', updateCalcButton);
+});
+
+function calculate() {
+  const age = getVal('inp-age'), height = getVal('inp-height'), weight = getVal('inp-weight');
+  const waist = getVal('inp-waist'), hip = getVal('inp-hip');
+
+  if ([age, height, weight, waist, hip].some(v => v <= 0)) return;
+
+  const WHR  = waist / hip;
+  const WHtR = waist / height;
+  const BMI  = weight / ((height / 100) ** 2);
+  const ABSI = (waist / 100) / (BMI ** (2/3) * (height / 100) ** 0.5);
+  const RFM  = currentSex === 'male' ? 64 - 20 * height / waist : 76 - 20 * height / waist;
+
+  const { mean, std } = MODEL.scaler;
+  const logit = MODEL.intercept
+    + MODEL.coefs.age  * (age  - mean.age)  / std.age
+    + MODEL.coefs.WHR  * (WHR  - mean.WHR)  / std.WHR
+    + MODEL.coefs.WHtR * (WHtR - mean.WHtR) / std.WHtR
+    + MODEL.coefs.ABSI * (ABSI - mean.ABSI) / std.ABSI
+    + MODEL.coefs.RFM  * (RFM  - mean.RFM)  / std.RFM;
+
+  const prob = sigmoid(logit);
+  const pct = prob * 100;
+
+  // Risk level
+  let riskLevel, riskColor;
+  if (pct < 20)      { riskLevel = 'Low';       riskColor = '#22c55e'; }
+  else if (pct < 40) { riskLevel = 'Moderate';   riskColor = '#f59e0b'; }
+  else if (pct < 60) { riskLevel = 'High';       riskColor = '#ef4444'; }
+  else               { riskLevel = 'Very High';  riskColor = '#991b1b'; }
+
+  // Update gauge
+  const angle = -90 + prob * 180;
+  document.getElementById('needle').setAttribute('transform', `rotate(${angle}, 100, 100)`);
+
+  const pctText = document.getElementById('pct-text');
+  pctText.textContent = pct.toFixed(1) + '%';
+  pctText.style.fill = riskColor;
+
+  const label = document.getElementById('risk-label');
+  label.textContent = riskLevel + ' Risk';
+  label.style.color = riskColor;
+
+  // Indices
+  const indices = { WHR: WHR.toFixed(4), WHtR: WHtR.toFixed(4), BMI: BMI.toFixed(1), ABSI: ABSI.toFixed(5), RFM: RFM.toFixed(1) };
+  const listEl = document.getElementById('indices-list');
+  listEl.innerHTML = Object.entries(indices).map(([k, v]) =>
+    `<div class="indices-row"><span>${k}</span><span class="indices-val">${v}</span></div>`
+  ).join('');
+
+  // Show
+  document.getElementById('result-card').classList.remove('hidden');
+}
+
+function resetAll() {
+  ['inp-age','inp-height','inp-weight','inp-waist','inp-hip'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  setSex('male');
+  clearResult();
+}
+</script>
+</body>
+</html>
