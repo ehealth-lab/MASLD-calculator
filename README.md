@@ -64,7 +64,7 @@ Download `index.html` and open it directly in any modern browser. The calculator
 
 ## Methodology
 
-1. **Cohort construction:** UK Biobank participants with valid MRI-PDFF, excluding excessive alcohol intake (> 20 g/day for women, > 30 g/day for men), viral/autoimmune hepatitis, other chronic liver diseases, and pregnancy.
+1. **Cohort construction:** UK Biobank participants with valid MRI-PDFF, excluding excessive alcohol intake, viral/autoimmune hepatitis, other chronic liver diseases, and pregnancy.
 2. **Feature selection:** Ten candidate anthropometric features were evaluated; Pearson correlation-based collinearity removal (|r| > 0.8) retained five independent predictors.
 3. **Training:** SMOTE oversampling for class balance, StandardScaler normalization, hyperparameter tuning via 5-fold cross-validation.
 4. **Validation:** External validation on NHANES 2017–2023 with sensitivity analyses across multiple CAP thresholds (≥ 248, ≥ 275, ≥ 300 dB/m).
