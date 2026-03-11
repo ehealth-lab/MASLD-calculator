@@ -8,7 +8,7 @@ An interactive web-based calculator for predicting the risk of **Metabolic Dysfu
 
 ## Overview
 
-This calculator implements a logistic regression model trained on **UK Biobank** imaging data (n = 27,397) and externally validated on **NHANES 2017–2023**. It predicts MASLD risk using five derived anthropometric indices — requiring only age, sex, height, weight, waist circumference, and hip circumference as inputs.
+  This calculator implements a MLP model trained on **UK Biobank** imaging data (n = 27,397) and externally validated on **NHANES 2017–2023**. It predicts MASLD risk using five derived anthropometric indices — requiring only age, sex, height, weight, waist circumference, and hip circumference as inputs.
 
 MASLD was defined as hepatic steatosis (MRI-PDFF ≥ 5%) with at least one cardiometabolic risk factor, following the 2023 multi-society Delphi consensus nomenclature.
 
@@ -20,7 +20,7 @@ MASLD was defined as hepatic steatosis (MRI-PDFF ≥ 5%) with at least one cardi
 | **Training cohort** | UK Biobank, n = 27,397 |
 | **External validation** | NHANES 2017–2023 |
 | **Outcome** | MRI-PDFF–defined MASLD |
-| **Internal AUC** | 0.84 |
+| **Internal AUC** | 0.83 |
 | **Features** | Age, WHR, WHtR, ABSI, RFM |
 
 ### Feature Definitions
