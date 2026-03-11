@@ -1,88 +1,122 @@
-# MASLD Risk Prediction Calculator
+# MASLD Risk Calculator
 
-An interactive web-based calculator for predicting the risk of **Metabolic Dysfunction-Associated Steatotic Liver Disease (MASLD)** using simple anthropometric measurements.
+A web-based screening tool for **Metabolic Dysfunction-Associated Steatotic Liver Disease (MASLD)** using a validated MLP Neural Network model. No laboratory tests or imaging required — only routine anthropometric measurements.
 
-🔗 **Live Demo:** [https://ehealth-lab.github.io/MASLD-calculator/](https://ehealth-lab.github.io/MASLD-calculator/)
+🔗 **Live Calculator**: [your-username.github.io/masld-calculator](https://your-username.github.io/masld-calculator)
 
 ---
 
 ## Overview
 
-  This calculator implements a MLP model trained on **UK Biobank** imaging data (n = 27,397) and externally validated on **NHANES 2017–2023**. It predicts MASLD risk using five derived anthropometric indices — requiring only age, sex, height, weight, waist circumference, and hip circumference as inputs.
+This calculator implements a machine learning model developed to support community-based MASLD screening using five simple anthropometric-derived features. The model was trained on the UK Biobank cohort using MRI-derived proton density fat fraction (MRI-PDFF) as the imaging reference standard, and externally validated in an independent NHANES cohort.
 
-MASLD was defined as hepatic steatosis (MRI-PDFF ≥ 5%) with at least one cardiometabolic risk factor, following the 2023 multi-society Delphi consensus nomenclature.
+| | Internal Validation (UK Biobank) | External Validation (NHANES) |
+|---|---|---|
+| **Cohort size** | 35,548 | 5,900 |
+| **AUC** | 0.828 (95% CI: 0.818–0.839) | 0.833 |
+| **Sensitivity** | 0.776 | 0.765 |
+| **F1 Score** | 0.547 | 0.730 |
+| **Brier Score** | — | 0.170 |
+
+---
 
 ## Model Details
 
-| Item | Detail |
-|------|--------|
-| **Algorithm** | Logistic Regression (L2-regularized) |
-| **Training cohort** | UK Biobank, n = 27,397 |
-| **External validation** | NHANES 2017–2023 |
-| **Outcome** | MRI-PDFF–defined MASLD |
-| **Internal AUC** | 0.83 |
-| **Features** | Age, WHR, WHtR, ABSI, RFM |
+| Parameter | Value |
+|---|---|
+| Algorithm | MLP Neural Network |
+| Hidden layer | 1 layer, 50 neurons |
+| Activation (hidden) | tanh |
+| Activation (output) | logistic (sigmoid) |
+| Optimal threshold | 0.367 (Youden's J) |
+| Reference standard (training) | MRI-PDFF ≥ 5% |
+| Reference standard (validation) | CAP ≥ 238 dB/m |
 
-### Feature Definitions
+**Input features** (in order of SHAP importance):
 
-| Feature | Formula | Description |
-|---------|---------|-------------|
-| **WHR** | Waist / Hip | Waist-to-hip ratio |
-| **WHtR** | Waist / Height | Waist-to-height ratio |
-| **ABSI** | Waist(m) / [BMI^(2/3) × Height(m)^(1/2)] | A Body Shape Index |
-| **RFM** | 64 − 20 × Height/Waist (male) <br> 76 − 20 × Height/Waist (female) | Relative Fat Mass |
+1. **WHtR** — Waist-to-Height Ratio *(dominant predictor)*
+2. **ABSI** — A Body Shape Index
+3. **Height** (cm)
+4. **RFM** — Relative Fat Mass
+5. **Age** (years)
 
-## Input Requirements
+All derived indices are calculated automatically from raw measurements entered by the user.
 
-| Parameter | Unit | Typical Range |
-|-----------|------|---------------|
-| Age | years | 18–100 |
-| Height | cm | 100–220 |
-| Weight | kg | 30–250 |
-| Waist circumference | cm | 50–180 |
-| Hip circumference | cm | 50–180 |
-| Sex | Male / Female | — |
+---
 
 ## Usage
 
-### Online
+### Online (recommended)
 
-Visit the [live calculator](https://ehealth-lab.github.io/MASLD-calculator/) — no installation required.
+Visit the live calculator at the link above. Enter the following measurements:
+
+- Age (years)
+- Sex
+- Height (cm)
+- Weight (kg)
+- Waist circumference (cm)
+- Hip circumference (cm)
+
+The calculator will automatically derive WHtR, ABSI, and RFM, run the model, and display the estimated MASLD probability with a risk classification.
 
 ### Local
 
-Download `index.html` and open it directly in any modern browser. The calculator runs entirely client-side with no server dependencies.
+Clone the repository and open `index.html` in any modern browser:
 
-## Risk Stratification
+```bash
+git clone https://github.com/your-username/masld-calculator.git
+cd masld-calculator
+open index.html
+```
 
-| Predicted Probability | Risk Level |
-|-----------------------|------------|
-| < 20% | Low |
-| 20–40% | Moderate |
-| 40–60% | High |
-| ≥ 60% | Very High |
+No installation, server, or internet connection required. All model parameters are embedded directly in the HTML file.
 
-## Methodology
+---
 
-1. **Cohort construction:** UK Biobank participants with valid MRI-PDFF, excluding excessive alcohol intake, viral/autoimmune hepatitis, other chronic liver diseases, and pregnancy.
-2. **Feature selection:** Ten candidate anthropometric features were evaluated; Pearson correlation-based collinearity removal (|r| > 0.8) retained five independent predictors.
-3. **Training:** SMOTE oversampling for class balance, StandardScaler normalization, hyperparameter tuning via 5-fold cross-validation.
-4. **Validation:** External validation on NHANES 2017–2023 with sensitivity analyses across multiple CAP thresholds (≥ 248, ≥ 275, ≥ 300 dB/m).
+## Derived Index Formulas
 
-## Disclaimer
+| Index | Formula |
+|---|---|
+| WHtR | Waist (cm) / Height (cm) |
+| ABSI | [Waist (m)] / [BMI^(2/3) × Height (m)^(1/2)] |
+| RFM (Male) | 64 − (20 × Height / Waist) |
+| RFM (Female) | 76 − (20 × Height / Waist) |
+| BMI | Weight (kg) / Height (m)² |
 
-This calculator is intended for **research and educational purposes only**. It should not be used as a substitute for professional medical advice, diagnosis, or treatment. Clinical decisions should always be made in consultation with qualified healthcare providers.
+---
+
+## Data Sources
+
+- **UK Biobank** — Large-scale prospective cohort (n ≈ 500,000), accessed under Application Number 1155908. MRI-PDFF measurements obtained through the dedicated imaging sub-study. Ethics approval: North West Multi-Centre Research Ethics Committee (Ref: 11/NW/0382).
+
+- **NHANES** — National Health and Nutrition Examination Survey, cycles 2017–March 2020 and August 2021–August 2023. Publicly available from the [NCHS website](https://www.cdc.gov/nchs/nhanes). MASLD defined by CAP ≥ 238 dB/m via transient elastography.
+
+---
 
 ## Citation
 
 If you use this tool in your research, please cite:
 
-> *[Manuscript in preparation]*
+```
+[Author names]. Anthropometric indices-based machine learning for interpretable 
+MASLD screening: development and external validation in UK Biobank and NHANES. 
+[Journal]. [Year]. DOI: [xxx]
+```
+
+---
+
+## Disclaimer
+
+This tool is intended for **research and educational purposes only**. It does not constitute medical advice, diagnosis, or treatment. Clinical decisions should be made by qualified healthcare professionals based on comprehensive patient evaluation. The authors accept no responsibility for clinical decisions made on the basis of this tool.
+
+---
 
 ## License
 
-This project is open-source under the [MIT License](LICENSE).
+MIT License — free to use, modify, and distribute with attribution.
+
+---
 
 ## Contact
 
-For questions or collaboration inquiries, please open an [issue](https://github.com/ehealth-lab/MASLD-calculator/issues) on this repository.
+For questions or feedback, please open an issue or contact the corresponding author at [email].
