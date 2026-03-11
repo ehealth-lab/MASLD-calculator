@@ -2,7 +2,7 @@
 
 A web-based screening tool for **Metabolic Dysfunction-Associated Steatotic Liver Disease (MASLD)** using a validated MLP Neural Network model. No laboratory tests or imaging required — only routine anthropometric measurements.
 
-🔗 **Live Calculator**: [your-username.github.io/masld-calculator]( https://ehealth-lab.github.io/MASLD-calculator/)
+🔗 **Live Calculator**: [ https://ehealth-lab.github.io/MASLD-calculator/]( https://ehealth-lab.github.io/MASLD-calculator/)
 
 ---
 
