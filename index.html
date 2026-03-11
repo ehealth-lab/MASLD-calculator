@@ -4,202 +4,534 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MASLD Risk Calculator</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --font-display: 'Playfair Display', Georgia, serif;
-    --font-body: 'Source Sans 3', 'Segoe UI', sans-serif;
-    --c-bg: #f8fafb; --c-card: #ffffff; --c-accent: #0f5a5e;
-    --c-accent-light: #e6f4f1; --c-border: #d4dde4; --c-text: #1e293b; --c-muted: #64748b;
-  }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { min-height:100vh; background:var(--c-bg); font-family:var(--font-body); color:var(--c-text); display:flex; justify-content:center; padding:32px 16px; }
-  .container { max-width:520px; width:100%; }
-  .header { text-align:center; margin-bottom:28px; }
-  .header-tag { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:var(--c-accent); margin-bottom:6px; }
-  .header h1 { font-family:var(--font-display); font-size:28px; font-weight:800; color:var(--c-text); line-height:1.2; }
-  .header p { font-size:13px; color:var(--c-muted); margin-top:8px; line-height:1.5; }
-  .card { background:var(--c-card); border-radius:16px; border:1px solid var(--c-border); box-shadow:0 2px 12px rgba(0,0,0,0.04); padding:28px 24px; }
-  .sex-label { font-size:13px; font-weight:700; color:var(--c-muted); display:block; margin-bottom:8px; }
-  .sex-toggle { display:flex; gap:8px; margin-bottom:20px; }
-  .sex-btn { flex:1; padding:10px 0; border-radius:10px; border:1.5px solid var(--c-border); background:transparent; color:var(--c-muted); font-weight:700; font-size:14px; cursor:pointer; transition:all 0.15s ease; font-family:var(--font-body); }
-  .sex-btn.active { border-color:var(--c-accent); background:var(--c-accent-light); color:var(--c-accent); }
-  .field { margin-bottom:14px; }
-  .field-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px; }
-  .field-label { font-size:13px; font-weight:700; color:var(--c-muted); }
-  .field-unit { font-size:11px; color:#94a3b8; }
-  .field input { width:100%; padding:10px 14px; border-radius:10px; border:1.5px solid var(--c-border); font-size:15px; font-family:var(--font-body); outline:none; transition:border-color 0.15s; }
-  .field input:focus { border-color:var(--c-accent); }
-  input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
-  input[type=number] { -moz-appearance:textfield; }
-  .buttons { display:flex; gap:10px; margin-top:20px; }
-  .btn-calc { flex:2; padding:12px 0; border-radius:12px; border:none; background:#cbd5e1; color:#fff; font-size:15px; font-weight:700; cursor:not-allowed; transition:all 0.2s; font-family:var(--font-body); }
-  .btn-calc.enabled { background:var(--c-accent); cursor:pointer; box-shadow:0 2px 8px rgba(15,90,94,0.25); }
-  .btn-calc.enabled:hover { filter:brightness(1.1); }
-  .btn-reset { flex:1; padding:12px 0; border-radius:12px; border:1.5px solid var(--c-border); background:transparent; color:var(--c-muted); font-size:14px; font-weight:600; cursor:pointer; font-family:var(--font-body); }
-  .result-card { margin-top:20px; background:var(--c-card); border-radius:16px; border:1px solid var(--c-border); box-shadow:0 2px 12px rgba(0,0,0,0.04); padding:20px 24px; animation:fadeIn 0.3s ease; }
-  .gauge-wrap { text-align:center; padding:20px 0; }
-  .risk-label { font-size:18px; font-weight:700; margin-top:-4px; letter-spacing:0.5px; }
-  .indices-box { margin-top:12px; padding:14px 16px; background:#f1f5f9; border-radius:10px; font-size:12px; color:var(--c-muted); line-height:1.7; }
-  .indices-title { font-weight:700; color:var(--c-text); margin-bottom:6px; font-size:13px; }
-  .indices-row { display:flex; justify-content:space-between; }
-  .indices-val { font-weight:600; color:var(--c-text); }
-  .disclaimer { margin-top:14px; padding:12px 16px; background:#fffbeb; border-radius:10px; border:1px solid #fde68a; font-size:11px; color:#92400e; line-height:1.6; }
-  .footer { text-align:center; margin-top:20px; font-size:11px; color:#94a3b8; line-height:1.6; }
-  .hidden { display:none; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  :root {
+    --navy:   #0f2744;
+    --blue:   #1a4a8a;
+    --mid:    #2d6fd4;
+    --accent: #4a9eff;
+    --green:  #1a7a4a;
+    --green-light: #e6f7ee;
+    --red:    #b83232;
+    --red-light: #fdf0f0;
+    --sand:   #f7f4ef;
+    --text:   #1a1a2e;
+    --muted:  #6b7280;
+    --border: #d8dde6;
+    --white:  #ffffff;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--sand);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--navy);
+    padding: 48px 40px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(74,158,255,0.15) 0%, transparent 70%);
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 30%;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(45,111,212,0.12) 0%, transparent 70%);
+  }
+  .header-inner { max-width: 680px; margin: 0 auto; position: relative; z-index: 1; }
+  .badge {
+    display: inline-block;
+    background: rgba(74,158,255,0.18);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(74,158,255,0.25);
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 5vw, 42px);
+    color: var(--white);
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  h1 em { color: var(--accent); font-style: italic; }
+  .subtitle {
+    color: rgba(255,255,255,0.65);
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 520px;
+  }
+  .stat-row {
+    display: flex; gap: 28px; margin-top: 28px; flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px; color: var(--accent);
+    display: block;
+  }
+  .stat-label { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* ── Main ── */
+  main { max-width: 680px; margin: 0 auto; padding: 36px 24px 60px; }
+
+  .card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(15,39,68,0.08), 0 1px 3px rgba(15,39,68,0.06);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .card-header {
+    padding: 20px 28px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--blue), var(--mid));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+  .card-title { font-size: 14px; font-weight: 600; color: var(--navy); }
+  .card-body { padding: 24px 28px; }
+
+  /* ── Grid ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  @media (max-width: 520px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+
+  /* ── Inputs ── */
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label {
+    font-size: 12px; font-weight: 600;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em;
+  }
+  .input-wrap { position: relative; }
+  .input-wrap input, .input-wrap select {
+    width: 100%;
+    padding: 11px 44px 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 15px; font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+  }
+  .input-wrap input:focus, .input-wrap select:focus {
+    outline: none;
+    border-color: var(--mid);
+    box-shadow: 0 0 0 3px rgba(45,111,212,0.12);
+  }
+  .unit {
+    position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px; color: var(--muted); font-weight: 500;
+    pointer-events: none;
+  }
+  .sex-toggle { display: flex; gap: 8px; }
+  .sex-btn {
+    flex: 1; padding: 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--white);
+    font-size: 14px; font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .sex-btn.active {
+    border-color: var(--mid);
+    background: rgba(45,111,212,0.07);
+    color: var(--blue);
+    font-weight: 600;
+  }
+
+  /* ── Derived ── */
+  .derived-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  @media (max-width: 520px) { .derived-grid { grid-template-columns: 1fr 1fr; } }
+  .derived-item {
+    background: var(--sand);
+    border-radius: 10px;
+    padding: 12px 14px;
+    border: 1px solid rgba(15,39,68,0.07);
+  }
+  .derived-name { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
+  .derived-val { font-size: 18px; font-weight: 600; color: var(--navy); margin-top: 2px; font-family: 'DM Serif Display', serif; }
+  .derived-val.highlight { color: var(--mid); }
+
+  /* ── Button ── */
+  .btn-calc {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-size: 16px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+    letter-spacing: 0.02em;
+    margin-top: 8px;
+  }
+  .btn-calc:hover { opacity: 0.92; transform: translateY(-1px); }
+  .btn-calc:active { transform: translateY(0); }
+
+  /* ── Result ── */
+  #result { display: none; animation: fadeUp 0.4s ease; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-card {
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    position: relative; overflow: hidden;
+  }
+  .result-card.low  { background: var(--green-light); border: 1.5px solid #a8dfc0; }
+  .result-card.high { background: var(--red-light);   border: 1.5px solid #f0b8b8; }
+
+  .result-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+  .result-label { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
+  .result-card.low  .result-label { color: var(--green); }
+  .result-card.high .result-label { color: var(--red); }
+
+  .result-pct {
+    font-family: 'DM Serif Display', serif;
+    font-size: 52px; line-height: 1;
+  }
+  .result-card.low  .result-pct { color: var(--green); }
+  .result-card.high .result-pct { color: var(--red); }
+
+  .result-msg { margin-top: 14px; font-size: 14px; line-height: 1.6; }
+  .result-card.low  .result-msg { color: #1a5c38; }
+  .result-card.high .result-msg { color: #8b2020; }
+
+  /* gauge bar */
+  .gauge-wrap { margin-top: 20px; }
+  .gauge-track {
+    height: 8px; border-radius: 99px;
+    background: linear-gradient(to right, #4ade80 0%, #facc15 45%, #f87171 70%, #dc2626 100%);
+    position: relative;
+  }
+  .gauge-thumb {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 3px solid var(--navy);
+    position: absolute;
+    top: 50%; transform: translate(-50%, -50%);
+    transition: left 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .gauge-labels { display: flex; justify-content: space-between; margin-top: 6px; }
+  .gauge-labels span { font-size: 11px; color: var(--muted); }
+
+  /* disclaimer */
+  .disclaimer {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 18px 20px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+    border: 1px solid var(--border);
+  }
+  .disclaimer strong { color: var(--navy); }
+
+  /* error */
+  .error-msg {
+    background: #fff8e1; border: 1px solid #ffe082;
+    border-radius: 10px; padding: 12px 16px;
+    font-size: 13px; color: #7a5c00;
+    margin-bottom: 12px; display: none;
+  }
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <div class="header-tag">Clinical Risk Calculator</div>
-    <h1>MASLD Risk Prediction</h1>
-    <p>Based on a multilayer perceptron (MLP) neural network trained on UK Biobank (n&nbsp;=&nbsp;27,397)<br>using MRI-PDFF&ndash;defined MASLD. Externally validated on NHANES 2017&ndash;2023.</p>
+
+<header>
+  <div class="header-inner">
+    <div class="badge">Research Tool · ML-Based Screening</div>
+    <h1>MASLD Risk<br><em>Calculator</em></h1>
+    <p class="subtitle">
+      Estimates individual MASLD risk using a validated MLP Neural Network model trained on UK Biobank
+      and externally validated in NHANES — no laboratory tests required.
+    </p>
+    <div class="stat-row">
+      <div class="stat"><span class="stat-num">0.833</span><span class="stat-label">External AUC</span></div>
+      <div class="stat"><span class="stat-num">35,548</span><span class="stat-label">Training n (UKB)</span></div>
+      <div class="stat"><span class="stat-num">5,900</span><span class="stat-label">Validation n (NHANES)</span></div>
+      <div class="stat"><span class="stat-num">5</span><span class="stat-label">Input Variables</span></div>
+    </div>
   </div>
+</header>
+
+<main>
+
+  <!-- Measurements -->
   <div class="card">
-    <label class="sex-label">Sex</label>
-    <div class="sex-toggle">
-      <button class="sex-btn active" id="btn-male" onclick="setSex('male')">&#9794; Male</button>
-      <button class="sex-btn" id="btn-female" onclick="setSex('female')">&#9792; Female</button>
+    <div class="card-header">
+      <div class="card-icon">📏</div>
+      <span class="card-title">Anthropometric Measurements</span>
     </div>
-    <div class="field"><div class="field-header"><label class="field-label">Age</label><span class="field-unit">years</span></div><input type="number" id="inp-age" placeholder="e.g. 55" min="18" max="100" oninput="clearResult()"></div>
-    <div class="field"><div class="field-header"><label class="field-label">Height</label><span class="field-unit">cm</span></div><input type="number" id="inp-height" placeholder="e.g. 170" min="100" max="220" oninput="clearResult()"></div>
-    <div class="field"><div class="field-header"><label class="field-label">Weight</label><span class="field-unit">kg</span></div><input type="number" id="inp-weight" placeholder="e.g. 75" min="30" max="250" oninput="clearResult()"></div>
-    <div class="field"><div class="field-header"><label class="field-label">Waist Circumference</label><span class="field-unit">cm</span></div><input type="number" id="inp-waist" placeholder="e.g. 90" min="50" max="180" oninput="clearResult()"></div>
-    <div class="field"><div class="field-header"><label class="field-label">Hip Circumference</label><span class="field-unit">cm</span></div><input type="number" id="inp-hip" placeholder="e.g. 100" min="50" max="180" oninput="clearResult()"></div>
-    <div class="buttons">
-      <button class="btn-calc" id="btn-calc" onclick="calculate()">Calculate Risk</button>
-      <button class="btn-reset" onclick="resetAll()">Reset</button>
+    <div class="card-body">
+      <div class="grid-2" style="margin-bottom:16px">
+        <div class="field">
+          <label>Age</label>
+          <div class="input-wrap">
+            <input type="number" id="age" placeholder="55" min="18" max="80" oninput="updateDerived()">
+            <span class="unit">yr</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Sex</label>
+          <div class="sex-toggle">
+            <button class="sex-btn active" id="btn-male" onclick="setSex(1)">♂ Male</button>
+            <button class="sex-btn" id="btn-female" onclick="setSex(0)">♀ Female</button>
+          </div>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="field">
+          <label>Height</label>
+          <div class="input-wrap">
+            <input type="number" id="height" placeholder="170" step="0.1" oninput="updateDerived()">
+            <span class="unit">cm</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Weight</label>
+          <div class="input-wrap">
+            <input type="number" id="weight" placeholder="75" step="0.1" oninput="updateDerived()">
+            <span class="unit">kg</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Waist</label>
+          <div class="input-wrap">
+            <input type="number" id="waist" placeholder="90" step="0.1" oninput="updateDerived()">
+            <span class="unit">cm</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Hip</label>
+          <div class="input-wrap">
+            <input type="number" id="hip" placeholder="100" step="0.1" oninput="updateDerived()">
+            <span class="unit">cm</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="result-card hidden" id="result-card">
-    <div class="gauge-wrap">
-      <svg viewBox="0 0 200 120" width="260" height="160">
-        <defs><linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#22c55e"/><stop offset="33%" stop-color="#f59e0b"/><stop offset="66%" stop-color="#ef4444"/><stop offset="100%" stop-color="#991b1b"/></linearGradient></defs>
-        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#e8e8e8" stroke-width="14" stroke-linecap="round"/>
-        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gaugeGrad)" stroke-width="14" stroke-linecap="round"/>
-        <g id="needle"><line x1="100" y1="100" x2="100" y2="32" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/><circle cx="100" cy="100" r="5" fill="#1e293b"/></g>
-        <text id="pct-text" x="100" y="88" text-anchor="middle" style="font-size:28px;font-weight:800;font-family:var(--font-display)"></text>
-      </svg>
-      <div class="risk-label" id="risk-label"></div>
+
+  <!-- Derived indices -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🧮</div>
+      <span class="card-title">Derived Anthropometric Indices</span>
     </div>
-    <div class="indices-box"><div class="indices-title">Calculated Indices</div><div id="indices-list"></div></div>
-    <div class="disclaimer"><strong>Disclaimer:</strong> This calculator is for research purposes only and should not replace clinical judgment. The model was developed using UK Biobank data and validated on NHANES 2017&ndash;2023. MASLD was defined by MRI-PDFF &ge; 5% with &ge; 1 cardiometabolic risk factor.</div>
+    <div class="card-body">
+      <div class="derived-grid">
+        <div class="derived-item">
+          <div class="derived-name">WHtR</div>
+          <div class="derived-val highlight" id="d-whtr">—</div>
+        </div>
+        <div class="derived-item">
+          <div class="derived-name">ABSI</div>
+          <div class="derived-val highlight" id="d-absi">—</div>
+        </div>
+        <div class="derived-item">
+          <div class="derived-name">RFM</div>
+          <div class="derived-val highlight" id="d-rfm">—</div>
+        </div>
+        <div class="derived-item">
+          <div class="derived-name">BMI</div>
+          <div class="derived-val" id="d-bmi">—</div>
+        </div>
+        <div class="derived-item">
+          <div class="derived-name">WHR</div>
+          <div class="derived-val" id="d-whr">—</div>
+        </div>
+      </div>
+      <p style="margin-top:12px;font-size:12px;color:var(--muted);">
+        Highlighted indices (WHtR, ABSI, RFM) are model inputs. BMI and WHR shown for reference only.
+      </p>
+    </div>
   </div>
-  <div class="footer">Model: MLP Neural Network (5&rarr;100&rarr;1, tanh) &middot; Training: UK Biobank (n=27,397) &middot; External validation: NHANES 2017&ndash;2023<br>Features: Age, Height, WHtR, ABSI, RFM &middot; Outcome: MRI-PDFF&ndash;defined MASLD</div>
-</div>
+
+  <div class="error-msg" id="error-msg">⚠ Please fill in all fields before calculating.</div>
+
+  <button class="btn-calc" onclick="calculate()">Calculate MASLD Risk →</button>
+
+  <!-- Result -->
+  <div id="result">
+    <div class="result-card" id="result-card">
+      <div class="result-top">
+        <div>
+          <div class="result-label" id="result-label"></div>
+          <div class="result-pct" id="result-pct"></div>
+          <div style="font-size:13px;margin-top:2px;opacity:0.7" id="result-sub"></div>
+        </div>
+      </div>
+      <div class="gauge-wrap">
+        <div class="gauge-track">
+          <div class="gauge-thumb" id="gauge-thumb"></div>
+        </div>
+        <div class="gauge-labels">
+          <span>0%</span><span>Low risk</span><span>Threshold 36.7%</span><span>High risk</span><span>100%</span>
+        </div>
+      </div>
+      <div class="result-msg" id="result-msg"></div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>Model details:</strong> MLP Neural Network · Hidden layer: 50 neurons · Activation: tanh (hidden), logistic (output) ·
+      Optimal threshold: 0.367 (Youden's J) · Features: age, height, WHtR, ABSI, RFM ·
+      Internal AUC: 0.828 (UK Biobank) · External AUC: 0.833 (NHANES, n = 5,900).<br><br>
+      <strong>Disclaimer:</strong> This tool is intended for research and educational purposes only.
+      It does not constitute medical advice, diagnosis, or treatment. Clinical decisions should be made
+      by qualified healthcare professionals based on comprehensive evaluation.
+    </div>
+  </div>
+
+</main>
 
 <script>
-// ── MLP Parameters (exported from sklearn) ──
-const MODEL = {
-  W0: [[-0.03245468748606533,0.1916454715141538,0.131784911690868,0.03557571092561266,-0.09216875503338139,-0.43436015758013496,-0.06896598340359865,0.04149214525389054,0.13816405965879008,0.03422953653881017,-0.14178698100254694,0.19066208991182917,0.17305319788627593,-0.015570383422820137,-0.1279436006952132,-0.09311669148755641,-0.18094645953404692,0.011707601070867399,-0.10563998048011353,-0.10799015518792504,0.056722503234513354,-0.08165506206143461,-0.030127380393930498,0.028957022127030545,-0.00020382457728597918,0.12435908918603182,0.0013347810206636914,0.03205908560298618,0.0034485777442279457,-0.10288741646780113,0.029562280286558884,-0.2657207397742869,-0.01854220344431094,-0.001810493384318829,0.22411574491764252,0.13656439810176682,-0.04685441892558952,-0.4861339005640377,0.07456819600686841,-0.16013354781702457,-0.14491704232675165,0.04449337320717234,-0.10669480622760771,0.12961472679975672,-0.044500138650543884,0.1717551699469334,-0.006444741805745153,0.009538067521340643,0.1186467649545683,-0.1262599156527283,0.1863534319761997,0.032261852906019996,0.49273878882908706,0.12287777103043296,0.0335580677272392,0.15271863232736874,-0.12298913569506327,0.0016733177639337714,-0.005861405911023616,-0.013414432403891988,-0.04685500423935848,-0.17869871309221272,0.10922260060892457,-0.005062170314687906,-0.10034057008769436,-0.0050331140854119015,-0.13973922208887252,0.07173861793532196,-0.10028795967283002,0.23485222034646153,0.044738450327645056,-0.3893425064167712,-0.18430113268927906,0.08421883522206933,0.09971098507926857,0.0823657260773183,0.32692646519890434,-0.02680911171096227,-0.10412256176143633,-0.16989700786888523,0.21581877411963546,0.0826316847796198,-0.043750017235582965,-0.13568889317638258,-0.07328137571599887,0.01609373027104787,-0.03533780561486849,-0.0005680167823122485,0.10918518381295804,-0.025684729439411566,-0.25316281796145323,0.10363054860550604,-0.022131701918921567,0.1328866422334047,0.13189359062437056,-0.04952007544816427,-0.015214186279382112,-0.07505807898804052,-0.13492368822212644,0.021428420583294947],[-0.2031683128569898,0.02441948373882737,-0.07354807285756469,-0.01887072999861879,0.0657247836661386,-0.1677566345125875,-0.0791910106934977,0.030141807301660908,-0.06413991144816657,-0.18126983742003072,-0.14258606080801597,-0.04507960440448674,0.28884075803649434,0.014546770376807964,0.05552760531511317,0.12212261890274004,0.19596807940316327,-0.10786724128888821,0.14606257406165568,0.04933850859352128,0.06542563176572697,0.12146342253343091,-0.09931239793573636,-0.12373514459012018,0.006265681187165336,-0.033836787593710324,-0.002683179441335425,0.13950052425387396,-0.4019013802501586,-0.013937763153888942,-0.0274795660745935,-0.09675066798092229,-0.09449912750237865,-0.0020877656707955026,0.18594966897472037,-0.06320138857680087,-0.061320756945180216,0.2104968873941477,-0.08239053666945734,-0.03837548146350249,0.11375803052649214,-0.1409415871026608,-0.025775280929488577,-0.08134009106475422,-0.16213774602897074,-0.2623811394464977,0.060632126336235465,0.23353671709310617,-0.24004157529641398,-0.11065533097404971,0.08850191771093951,-0.06688695086760314,-0.34723156359579777,0.07085150246946836,0.18495325806177698,-0.10752563331533692,0.07001193234371385,0.0004275070827959616,-0.005628951562676221,0.000986435175958065,-0.07241100054740866,0.04763850850161056,0.0674230399843465,0.00714220638024047,-0.15396957837789269,0.07835957901081383,-0.11641075363486185,-0.1024420380200542,-0.20057392698390183,-0.044120091829058586,0.04547599111760859,-0.019925286386722186,0.05562494003066093,0.3305352902310872,0.016077364146098456,-0.09291279181066711,0.03694544124123265,-0.037725135387233474,0.21795818736974273,-0.05579609946395146,-0.022630756129565065,-0.10946345144301195,0.1041336853354036,0.1743841333040435,-0.07259459324406038,0.04441774875285764,0.09600487319357502,-0.002807615333536239,0.021582344923541007,-0.10598066676193092,-0.3304808809729285,0.13425307613235632,0.12935391809720082,-0.016172805691980808,-0.06204217625324479,-0.03375322193445077,0.02358962242699262,0.14044910468380759,0.19375294844780144,0.05701599957168429],[0.07627228962391126,-0.2321337304088406,-0.2612255972617854,-0.019686435524469047,0.05464150916524892,-0.4399860322933574,-0.12223907239924997,0.04305353603622128,-0.2584070199875283,-0.2042147886283987,0.016420394828639606,0.17367070854549913,0.3584088073167676,-0.11790824728610898,0.08885169788021104,0.03196569361913907,-0.24733654975608857,0.047667751693223855,0.14084354391842563,0.18926019712518183,-0.029273052200525018,0.015565357783472015,-0.14034094241408415,-0.07759538029154023,-0.010866320672733092,-0.18642982738211952,0.011905322211208338,-0.046803251469017766,0.1404372182014832,0.13050666022960972,0.1085284118724789,0.16772247414122138,-0.01863541912793405,0.004964465127356799,-0.22545127399719123,-0.07137692139381031,-0.07422471909117015,-0.5582554928077128,-0.015711797563847857,-0.7873778081965797,0.202949001731289,-0.0007138338991072654,0.08408453132685385,-0.09268571473256851,-0.20721250112954614,0.48745384038459477,-0.03839059600789616,1.0121104514043109,0.4541934801329289,0.10924866388830631,-0.16893001124478543,-0.09418336132551518,0.5111814867340514,-0.05842337099194473,-0.17159508063497703,-0.04902623972928318,0.1064575153148635,0.008809097364057052,0.00552053108676366,-0.029448350536221458,0.06188083343900248,0.24466127602425347,-0.1179170108493522,0.0004076678385637057,0.10996406972729472,0.06442528742109521,0.06479658695536866,-0.0006543436680182686,-0.003656319574290607,-0.09848001148172789,0.1010705277858984,0.1955432971822509,0.12517039577573724,1.4288031375053645,-0.04450615739953581,0.29591742452289366,0.06570852656550862,0.036051541051496404,0.21186107033628646,0.21939686438563652,0.3825976323582919,-0.15003980045661114,-0.08567247348366108,-0.042218073021535886,0.06440094057160826,-0.11143849872373986,0.12293479828494962,0.005090658556771807,-0.16116559201899922,0.05148588948104211,-1.009919531278487,-0.29269585211882243,0.15525374514525123,-0.16570166057091196,-0.15037438579636297,0.03150332638099301,0.012373975422694888,0.08802636618384978,0.1442996071230975,-0.0931486921247954],[-0.10078315260304135,0.016608582568387147,0.07087316684076642,0.005148343884990317,0.0349961171295524,0.1948352413329883,0.0801585056747539,-0.12847887251296494,0.14671121154834785,-0.15339649743630449,0.02548662552248911,-0.13526359046947212,-0.3202857785087163,0.12051005801969403,0.04306834838107287,0.058146377016210185,-0.0742461619212155,-0.06637942338282944,-0.23967655904530039,-0.09846096996799698,-0.0037585192064246305,0.08521995803434793,0.107592514142236,0.014496618488769349,0.00465332695789642,0.08860355447603975,-0.0027040200338526847,0.021307511095472857,-0.1687823468120347,-0.055591389779501905,-0.045182414458816406,0.06469017187530715,0.0018018923818914666,-0.0006160035973951979,-0.13746109614801225,-0.06732867395222647,0.07001412999741032,0.10173274228824673,-0.04199925322455122,-0.07005712317674075,-0.15171002122456978,-0.060865218191845566,-0.10743125568831917,-0.022068101034195427,0.02764640778320514,0.022496765009569337,0.04700063910934889,-0.38379524766062156,-0.04326354103755948,0.031993269153991595,-0.007743773651663062,0.05694402237412989,0.010607115706228791,-0.0990893518359173,-0.11723698125053325,0.00034997889654072656,-0.21281589584413438,0.002161442341331369,-0.0004795694415699895,0.017645721702673863,-0.02370175514229753,-0.048936264498289146,-0.004487825849385044,0.014887709512569229,0.16922100796131787,-0.08209716811222434,0.17985741681419692,0.06254919118672542,0.008744653696711183,-0.13657531548680935,-0.2204243397850456,-0.6401590495638299,-0.2643604378228192,-0.25797471103622643,-0.065294696399718,-0.06689064859044806,0.5736780204700004,-0.033773094885915955,0.054481480044417926,-0.05884054037805497,-0.20432252081131477,0.0691204782988292,0.019874443434656608,0.16408752005746172,0.09342973090595741,0.12147208407186269,-0.09678563409860352,0.000887989287862384,0.0700664993969844,0.061256457276888686,0.4221224480501781,0.022531365645548227,-0.09522683333479104,0.21774707527120535,0.003822608775242105,0.08266770560507561,0.05141363575738576,0.004774037302165385,0.186789458648166,0.09129682129703276],[-0.10182672938327922,0.335764326423853,-0.025350388506167835,0.11969824899629174,-0.02049331485497367,0.18705648664710264,0.05404512964558441,-0.10639179548786196,0.44603411791147735,-0.20389308938850828,-0.044086367412329824,0.09338911314436626,0.2241756704971778,0.17133046909246083,-0.13223609616094195,-0.10389887346324451,-0.05737353466733603,-0.0341526526841654,0.16896741568909218,-0.02256667870924743,0.18074353347652908,0.167163062911493,-0.04285139583654628,0.11273364746283053,-0.0006512653870103115,0.06425399483753863,-0.0038719977912446113,0.08986273991779717,0.07376638880805489,-0.16776193084312582,-0.11789327723867814,0.23702968560082574,0.030205644124577744,-0.0020362274250262514,-0.17788320318375062,0.18876906634782942,-0.04758568481833192,0.1891631216071615,0.15866082693641054,-0.0441657052791631,-0.29124660253085044,0.19574530805024315,-0.04045874148603048,0.06511775227966461,0.24577097212477142,0.08118351397885208,0.08427868854115324,0.26915810934068746,-0.09414244162975183,-0.16035870744735325,0.2517680271736367,0.10229731426933716,-0.13208167532657072,0.09802308048918681,-0.08718265248103825,0.04403333572558493,-0.12959099008679145,0.00584942383636337,-0.008483753238661285,0.00699263533561895,-0.09533096630574628,-0.023670496671519117,0.14056529679049862,0.024508693318194583,0.19187973640913583,-0.0175034593437974,-0.051215399506598216,0.223399776403026,-0.043480789074749164,0.36141477046856535,-0.17820280876139763,0.417299302090026,-0.24966787399229137,0.23067010277173064,0.12058258716300221,0.19880292445786174,-0.4313692988475118,-0.005396339459016812,0.19878358873983945,-0.1340225517848685,-0.0019147688368867622,0.24940923306761265,0.055666293019732596,-0.004441118947637932,0.0034056808780573715,0.16111745231527191,-0.2326770465391287,-0.0008785844244940411,0.20758374686023523,0.21357461945513226,-0.1858125294150908,0.11573992305305046,-0.21897505599139508,-0.15467886470269837,0.18637865369303236,-0.09415027514578374,0.06875757381668476,-0.22012622745345722,0.27677022473035395,0.15681760777242423]],
-  b0: [0.2019288690512846,0.30758878205920875,0.003177924954946131,0.3280718149599208,0.25484729943785167,-0.18611273756685756,0.2848447610186943,0.3073231378466953,0.5844710530466477,0.09579293911765913,0.19407317816869432,-0.07054370838452939,0.2664499441309735,0.351600948976539,-0.4007513139901321,-0.3900438714025033,-0.08558496376146912,0.3097108214287885,0.14185384372066792,-0.2680156177061373,0.21780283594415364,0.04384243232993356,0.2525595369806036,0.36375503783840213,0.005638842243395534,0.15840202108910192,-0.011631535445112699,-0.2765370484634166,-0.14524335775270214,0.3725709941948979,-0.00638443801366154,0.18360510188563506,0.36919675255405876,-0.0030304055446405227,0.09546690835400083,0.40232877977355325,0.15808990162693579,-0.38773036751323847,0.1509533659585735,-0.674662185121123,0.4254497784142116,0.1553309263720197,-0.027100113880481613,0.25663343443228737,0.1627837738433102,0.22662958956984847,-0.35985511718080004,0.5802098519964191,0.10141850061563897,0.3806191892874158,0.22613964638676395,0.3311580618550962,0.41826589571654027,-0.11434543621571215,0.12532443359315812,0.0974586114807709,-0.018047661178865426,-0.02389814587674294,0.0006130879203033676,0.014406419931970114,0.28644137913685935,-0.18804809994494728,-0.3961590502205126,-0.04629453152492853,0.025812932598521347,0.20453612668834967,0.07479951670806985,0.14454937760314962,0.28827501431382796,0.15489496527844648,0.14058595523440845,0.38432250648591026,0.1030647003527054,0.9832679583813559,0.37623380801245476,0.2092048087799135,-0.4287294910677258,0.36192044005655394,0.09989827582700499,-0.2638198212846372,0.06363078360807285,0.47657046200748154,0.12251165014640736,-0.16328574886999705,-0.07076177467394774,-0.2980393102556395,-0.4397150386604055,-0.007741738993410139,-0.3935336401786076,-0.0241507120308239,-0.6271425059415224,0.13866675398611672,-0.4017934570284244,-0.04820869765162349,0.3883141782552749,-0.15725368701746276,0.22154309604603417,-0.34628973393105045,-0.10061675084240064,-0.3778093837809589],
-  W1: [[-0.17017327336728594],[-0.2485781707462142],[-0.13613526637759485],[-0.28738765668030747],[-0.1969979790485641],[-0.16944808742714548],[-0.17194830962666335],[-0.13403113872174838],[-0.20577385266648598],[0.05399498501241553],[-0.2536377005839384],[0.0917574781994856],[0.09209176620973766],[-0.3020810155393843],[0.28629091911908916],[0.299209212116057],[-0.18660274893350456],[-0.18622369392218593],[0.04819851524316826],[0.16372240090123677],[-0.1922419344670431],[-0.05511568107507128],[-0.06754732326750595],[-0.10712810971705639],[-0.00025843234350023006],[-0.0941573850041421],[-9.36212333287074e-05],[0.1868485974431541],[-0.15844114045733446],[-0.24137771946749434],[0.0011927112540669022],[0.11063586064818515],[-0.07485607010254593],[-0.00026787577017217673],[-0.20194128832049946],[-0.14105895213143965],[-0.011401336031410919],[-0.34669495311803133],[-0.13038655807369534],[-0.20813464873078066],[-0.3591998367173178],[-0.08813521194944715],[-0.011102045173296628],[-0.1464904826211194],[-0.2185544015498324],[0.30059547502530326],[0.14520290526441743],[0.45186346416326706],[0.2425688031933832],[-0.14843794669202928],[-0.2776166763770931],[-0.08445010174296974],[0.28972887079307424],[0.047299165144744616],[-0.045959967375635624],[-0.14807420314741568],[-0.020805556405667665],[1.8225983633522218e-05],[-0.0007541654437162205],[-0.0005247839838700804],[-0.1661841165702557],[0.2338473445742081],[0.203509729949611],[0.00035325887300308064],[-0.11419377187220824],[-0.15409071875996438],[-0.05843179785712248],[-0.14571603633071106],[-0.18847273828195324],[-0.16004771322589648],[-0.08091002619139318],[0.38902861011846934],[-0.14103759094368212],[0.5698410655759824],[-0.16868036477235798],[0.15251888545719905],[-0.33090953838883813],[-0.13357177737099918],[0.19959572554872707],[0.25337110479766006],[0.21869805357176314],[-0.2649440461960476],[-0.08266578998900999],[0.09624166409310803],[0.058268160724628336],[0.10772297819545776],[0.17334036261862806],[-0.0001740105228161637],[0.27262956876222816],[-0.06481256959279282],[-0.4706449583481349],[-0.07130880647431272],[0.11921553123474508],[-0.08784348816267114],[-0.2964884887824934],[0.06118822514011328],[-0.11739074752560397],[0.145114845377184],[-0.09987813718609263],[0.08910058454427008]],
-  b1: [-0.17077803234285252],
-  scaler: {
-    mean: [64.12107343457458,168.79033492822967,0.5194360055230405,0.07632931075463796,31.238300802744266],
-    std: [7.697683025232589,9.313356567841684,0.06967401690349129,0.005551128882398277,7.064908710098898]
-  },
-  // Feature order: age_i2, height_i2, WHtR, ABSI, RFM
-};
+// ── Model parameters (embedded) ──
+const WEIGHTS = [
+  [[-0.2539184821580133,0.07424763389454,0.0687022679768551,0.10214033941411985,-0.23314277078463577,-0.12569793623715514,-0.1509813046899527,0.06936336586874402,0.0710691228465394,0.038619723263666965,-0.2621987396242697,0.18463235438192233,0.20744860503557203,-0.15118161642682734,-0.3082873182401038,0.0022275757001971926,-0.12194779369509162,0.04642086891746203,-0.08669412300323537,-0.1949023317498271,0.20626292793123097,-0.2737808329177357,-0.03243247640312345,-0.049136457596781195,-0.023303739699073484,0.1726879535037912,-0.07736523077298843,0.2102005230122339,0.12962779961859422,-0.09169291578394559,0.11446651060757053,-0.013392686012572558,-0.46562986632532166,0.3280732308826049,0.1459783117233392,0.18844819229402826,-0.15185200148496142,-0.2110605454782824,0.0805068565258001,-0.12932808061078108,-0.18063634192044492,0.10228074721860397,-0.08544310781965643,0.2067199513648112,-0.30175757372874845,0.15074475814787555,-0.04542896928469348,-0.014262240077553695,0.09307486616429066,0.04210036244955838],[0.21903505582100558,0.12388574928369246,0.0794904579386523,0.2001028871859596,0.044552740110477385,0.2991177061867301,-0.21572496619431028,-0.112526429133932,-0.24603669237008757,-0.1656211927389554,-0.06693109664013373,-0.07294006721587008,0.20693560112714768,-0.08003500095978924,-0.09093842860908329,0.037312697287603974,-0.12113224555061405,0.2246713923384776,-0.5289948315056638,0.3620352415917274,0.2624102139838899,-0.1482182494092511,-0.09249310093578912,0.20616824943458822,0.13063427865005814,0.13800552595571428,0.2908264134622574,-0.275797676946781,-0.04459152893938919,-0.1499732659163295,0.09547152375896244,0.0805649773636659,-0.16901389910611966,-0.13325681841483872,-0.1325894584165308,-0.1101006901221487,0.1495584958804817,0.06818813004529566,0.17033238576346868,0.055273434040393046,-0.0038030541021763123,0.09414247380497456,0.08367806152438724,0.06791024075741642,0.026384160801853265,0.042473577046760046,-0.014659559816975922,0.002045613445199013,-0.12903659597416267,-0.0863684447805522],[-0.7011863865000059,0.18293190164586995,-0.04898562212035389,-0.036134225092913023,0.21033974650794604,0.01726065458593191,0.02915750083486697,-0.062238381180556884,-0.11475877461177135,-0.9247363978907094,-0.2126516623037927,-0.26150702283216903,0.37998766277212975,0.2632147491958315,0.18506624575522826,0.35622944709382676,0.15568566680852639,-0.20808646779068862,0.03688994517381577,-0.12090196900290076,1.0830542527148894,0.37175423377668937,-0.019107278247715954,-0.17470144190885542,-0.03157781436826739,0.06207642146210949,1.1851180929673846,0.6344228257635772,-0.37196407258565817,-0.0016499434915016626,-0.11340923000665931,0.004126255698442108,-0.5541123130220771,-0.17713142110712538,0.12108905558155192,-0.19087712729647183,0.09953042932628081,0.19272343631331154,-0.023136952558838134,0.24442415851809185,0.3822116887025142,-0.17074443067947184,-0.04503513247886963,-0.3125581311222837,-0.6564871711590784,-0.22154113105150708,0.03153448471080321,0.010798124045839436,-0.32359948281971157,-0.13996104040858845],[0.21647640599270598,-0.16063353981013193,-0.0713768702107349,-0.0819011522511383,0.08463813700498148,0.05669497394458093,0.12537723311119672,0.008490275060491605,-0.06948559019175539,0.19079201244264346,0.05495579367290348,0.04889460248165919,0.25637814125354547,-0.01576968110123835,-0.605838143875086,0.36737870937431305,-0.0009405759770614296,-0.08458600204146557,-0.3538751909155868,-0.10026877974612591,0.017571058474583425,-0.5979693145508882,0.022810516718608294,-0.025338948360235387,0.06970610877592166,-0.12358293288502309,-0.09710926980239638,-0.04280351277816796,0.18297184149813947,0.022291264785189207,-0.0061614680761778,-0.036754422225868416,0.3227816486787432,0.42562990553370833,-0.2608058862375294,0.09318720896081795,0.11745061992989533,0.05493280107103545,-0.06055363354837191,-0.19291929673949693,-0.34648063191284906,0.026086601296537216,0.11682710865236252,0.24812304414357905,-0.09872950575886977,0.011832874645283672,0.03484104597219763,0.201165181002974,0.1584929487631936,0.16088843279766343],[0.08753219931050163,-0.1709329484726083,-0.024514019021148317,0.2324120877892778,-0.025919250934043528,-0.4009003986122703,-0.21479090074321916,0.06866064609138998,-0.2960974826205247,-0.29278026098541293,0.00036800931346113805,0.3201394848967221,0.12952432490536703,-0.17888979487330328,0.3430067745287665,-0.12557104464084612,-0.23591983844851724,0.1515641049487787,0.0027832723472475864,0.10868489997052783,0.10428780867398962,0.25536229120462295,-0.0927816346687314,-0.06889908448174631,-0.06402376090428447,-0.057008271352259485,0.32816752203449934,-0.06542200995007309,0.3048431671519911,-0.029233758996602518,0.26936735700251274,0.043044547464059064,0.016029526006755473,-0.2429755049814263,-0.275430168193201,0.022377631333049316,-0.1401331690535081,-0.3802236298661061,0.12739350242063338,-0.36685612481142776,0.0711141135791003,0.27743636944858047,0.17491684225020457,-0.19607784022378408,-0.07871711970430874,0.2994736930106774,-0.02580325870976605,0.2870337269873555,0.34510021517800865,0.22035314553960905]],
+  [[-0.5453617681826866],[0.2114614697204566],[-0.0777975925837775],[0.24417170344005856],[0.23399753480384478],[0.28918432369944735],[-0.1682569659224458],[-0.23027605918889024],[0.1256084763016783],[-0.3597958225473937],[-0.1045794073915056],[-0.5518402046424481],[-0.26225706855283015],[0.47494689933942924],[0.3166719624326375],[0.13531807623108302],[-0.3023624992540911],[-0.31596488146515234],[-0.20081386588754552],[-0.08629511371147126],[0.43630002240854693],[0.2767428813800645],[-0.006053874201328217],[-0.22047296181728843],[0.2754352685016221],[0.18191931439576028],[0.4387333028453981],[0.3215501609437354],[-0.30076999014457756],[-0.30035640382107004],[-0.34110659628425366],[0.260245930776795],[-0.6122009752381523],[-0.23632031794715178],[-0.34062652400234467],[-0.13859805389673016],[0.40103024170544005],[0.2399254146665662],[0.23222659918478097],[-0.5097783009621104],[0.10934494095655922],[0.2119724996788108],[-0.4104232927356368],[-0.13669646277040046],[-0.24591251566591807],[0.12607944628551152],[-0.010532657933723743],[-0.18996810172493783],[-0.31329206081533734],[0.2810577133510285]]
+];
+const BIASES = [
+  [-0.26406471204947396,-0.38062582196689215,0.379638005556665,-0.3614314345415518,-0.3198934091860605,-0.20058640530219676,0.585944374519593,0.3938367572015623,-0.0832622365415644,-0.5613739527713925,0.10066840910986517,0.6111394834536671,-0.2398007686819852,-0.21261950813055566,0.3335558847352996,0.23194234947047832,0.448910638900925,0.26934424761093617,-0.0951412539630179,-0.044955388381910884,0.8571682958461938,0.24343794964855825,0.13735023102363308,0.34712113413298257,-0.18058653188642695,-0.18060052187341882,0.7753767724016091,0.26684787761091827,0.4452681398574033,0.38404708695794504,0.554464172958884,-0.33898160785507386,-0.18853098813976987,-0.21617285229711153,0.20967850247647196,-0.09998885036120973,-0.2488022510228887,-0.3049551679185091,-0.4875557761587932,0.3482637031669645,-0.3113543824210419,-0.6536861813926427,0.4568268270312613,-0.0543907796348953,-0.5619446506217448,-0.2874067037231783,0.10753730637490996,0.015679892197233876,0.4538603210172424,-0.532291571544795],
+  [-0.22875576184888924]
+];
+const SCALER_MEAN  = [64.0251775792953, 168.88291370701174, 0.5169611863890423, 0.076281087857946, 31.103899249363216];
+const SCALER_STD   = [7.673130018856697, 9.234754854787058, 0.06836680578329941, 0.0055680893361656665, 6.9777146959953];
+const THRESHOLD    = 0.367;
 
-let currentSex = 'male';
+let sex = 1; // 1=male, 0=female
 
-// ── MLP Forward Pass ──
-function tanh(x) { return Math.tanh(x); }
+function setSex(v) {
+  sex = v;
+  document.getElementById('btn-male').classList.toggle('active', v === 1);
+  document.getElementById('btn-female').classList.toggle('active', v === 0);
+  updateDerived();
+}
+
+function getVals() {
+  return {
+    age:    parseFloat(document.getElementById('age').value),
+    height: parseFloat(document.getElementById('height').value),
+    weight: parseFloat(document.getElementById('weight').value),
+    waist:  parseFloat(document.getElementById('waist').value),
+    hip:    parseFloat(document.getElementById('hip').value),
+  };
+}
+
+function updateDerived() {
+  const v = getVals();
+  const bmi  = v.weight / ((v.height / 100) ** 2);
+  const WHtR = v.waist / v.height;
+  const ABSI = (v.waist / 100) / (bmi ** (2/3) * (v.height / 100) ** 0.5);
+  const RFM  = (sex === 1 ? 64 : 76) - (20 * v.height / v.waist);
+  const WHR  = v.waist / v.hip;
+
+  const fmt = (x, d=3) => isNaN(x) || !isFinite(x) ? '—' : x.toFixed(d);
+  document.getElementById('d-whtr').textContent = fmt(WHtR);
+  document.getElementById('d-absi').textContent = fmt(ABSI);
+  document.getElementById('d-rfm').textContent  = fmt(RFM, 1);
+  document.getElementById('d-bmi').textContent  = fmt(bmi, 1);
+  document.getElementById('d-whr').textContent  = fmt(WHR);
+}
+
+function tanhFn(x) { return Math.tanh(x); }
 function sigmoid(x) { return 1 / (1 + Math.exp(-x)); }
 
-function mlpPredict(features) {
-  // features = [age, height, WHtR, ABSI, RFM] (already scaled)
-  const n_hidden = MODEL.b0.length; // 100
-
-  // Layer 1: hidden = tanh(X @ W0 + b0)
-  const hidden = new Array(n_hidden);
-  for (let j = 0; j < n_hidden; j++) {
-    let sum = MODEL.b0[j];
-    for (let i = 0; i < features.length; i++) {
-      sum += features[i] * MODEL.W0[i][j];
-    }
-    hidden[j] = tanh(sum);
-  }
-
-  // Layer 2: output = sigmoid(hidden @ W1 + b1)
-  let out = MODEL.b1[0];
-  for (let j = 0; j < n_hidden; j++) {
-    out += hidden[j] * MODEL.W1[j][0];
-  }
-  return sigmoid(out);
+function matVecAdd(W, x, b) {
+  return b.map((bi, j) => {
+    let s = bi;
+    for (let i = 0; i < x.length; i++) s += W[i][j] * x[i];
+    return s;
+  });
 }
 
-function computeRisk(age, height, weight, waist, hip, sex) {
-  const BMI  = weight / ((height / 100) ** 2);
-  const WHR  = waist / hip;
-  const WHtR = waist / height;
-  const ABSI = (waist / 100) / (BMI ** (2/3) * (height / 100) ** 0.5);
-  const RFM  = sex === 'male' ? 64 - 20 * height / waist : 76 - 20 * height / waist;
-
-  // Standardize: feature order = [age, height, WHtR, ABSI, RFM]
-  const raw = [age, height, WHtR, ABSI, RFM];
-  const scaled = raw.map((v, i) => (v - MODEL.scaler.mean[i]) / MODEL.scaler.std[i]);
-
-  const probability = mlpPredict(scaled);
-  return { probability, indices: { BMI: BMI.toFixed(1), WHR: WHR.toFixed(4), WHtR: WHtR.toFixed(4), ABSI: ABSI.toFixed(5), RFM: RFM.toFixed(1) } };
+function predict(features) {
+  // Standardise
+  let x = features.map((v, i) => (v - SCALER_MEAN[i]) / SCALER_STD[i]);
+  // Hidden layer (tanh)
+  x = matVecAdd(WEIGHTS[0], x, BIASES[0]).map(tanhFn);
+  // Output layer (sigmoid)
+  x = matVecAdd(WEIGHTS[1], x, BIASES[1]).map(sigmoid);
+  return x[0];
 }
-
-// ── UI Logic ──
-function setSex(s) {
-  currentSex = s;
-  document.getElementById('btn-male').className  = 'sex-btn' + (s==='male'  ? ' active' : '');
-  document.getElementById('btn-female').className = 'sex-btn' + (s==='female' ? ' active' : '');
-  clearResult();
-}
-
-function getVal(id) { return parseFloat(document.getElementById(id).value) || 0; }
-
-function clearResult() { document.getElementById('result-card').classList.add('hidden'); updateCalcButton(); }
-
-function updateCalcButton() {
-  const ids = ['inp-age','inp-height','inp-weight','inp-waist','inp-hip'];
-  const ok = ids.every(id => parseFloat(document.getElementById(id).value) > 0);
-  document.getElementById('btn-calc').className = 'btn-calc' + (ok ? ' enabled' : '');
-}
-document.querySelectorAll('.field input').forEach(inp => inp.addEventListener('input', updateCalcButton));
 
 function calculate() {
-  const age=getVal('inp-age'), height=getVal('inp-height'), weight=getVal('inp-weight');
-  const waist=getVal('inp-waist'), hip=getVal('inp-hip');
-  if ([age,height,weight,waist,hip].some(v => v<=0)) return;
+  const v = getVals();
+  const err = document.getElementById('error-msg');
 
-  const result = computeRisk(age, height, weight, waist, hip, currentSex);
-  const pct = result.probability * 100;
+  if ([v.age, v.height, v.weight, v.waist, v.hip].some(isNaN)) {
+    err.style.display = 'block';
+    return;
+  }
+  err.style.display = 'none';
 
-  let riskLevel, riskColor;
-  if (pct<20)      { riskLevel='Low';       riskColor='#22c55e'; }
-  else if (pct<40) { riskLevel='Moderate';   riskColor='#f59e0b'; }
-  else if (pct<60) { riskLevel='High';       riskColor='#ef4444'; }
-  else             { riskLevel='Very High';  riskColor='#991b1b'; }
+  const bmi  = v.weight / ((v.height / 100) ** 2);
+  const WHtR = v.waist / v.height;
+  const ABSI = (v.waist / 100) / (bmi ** (2/3) * (v.height / 100) ** 0.5);
+  const RFM  = (sex === 1 ? 64 : 76) - (20 * v.height / v.waist);
 
-  const angle = -90 + result.probability * 180;
-  document.getElementById('needle').setAttribute('transform', `rotate(${angle}, 100, 100)`);
-  const pctText = document.getElementById('pct-text');
-  pctText.textContent = pct.toFixed(1) + '%';
-  pctText.style.fill = riskColor;
-  const label = document.getElementById('risk-label');
-  label.textContent = riskLevel + ' Risk';
-  label.style.color = riskColor;
+  const features = [v.age, v.height, WHtR, ABSI, RFM];
+  const prob  = predict(features);
+  const pct   = (prob * 100).toFixed(1);
+  const isHigh = prob >= THRESHOLD;
 
-  const listEl = document.getElementById('indices-list');
-  listEl.innerHTML = Object.entries(result.indices).map(([k,v]) =>
-    `<div class="indices-row"><span>${k}</span><span class="indices-val">${v}</span></div>`
-  ).join('');
+  const resultDiv = document.getElementById('result');
+  const card      = document.getElementById('result-card');
+  resultDiv.style.display = 'block';
+  card.className = 'result-card ' + (isHigh ? 'high' : 'low');
 
-  document.getElementById('result-card').classList.remove('hidden');
-}
+  document.getElementById('result-label').textContent = isHigh ? '⚠ HIGH RISK' : '✓ LOW RISK';
+  document.getElementById('result-pct').textContent   = pct + '%';
+  document.getElementById('result-sub').textContent   = 'estimated MASLD probability';
+  document.getElementById('result-msg').textContent   = isHigh
+    ? 'The model predicts an elevated probability of MASLD. Further clinical evaluation — including imaging or laboratory assessment — is recommended.'
+    : 'The model predicts a low probability of MASLD based on the provided anthropometric measurements. Routine monitoring is advised.';
 
-function resetAll() {
-  ['inp-age','inp-height','inp-weight','inp-waist','inp-hip'].forEach(id => document.getElementById(id).value='');
-  setSex('male'); clearResult();
+  document.getElementById('gauge-thumb').style.left = Math.min(Math.max(prob * 100, 2), 98) + '%';
+
+  resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 </script>
 </body>
