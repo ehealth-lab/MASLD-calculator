@@ -6,20 +6,6 @@ A web-based screening tool for **Metabolic Dysfunction-Associated Steatotic Live
 
 ---
 
-## Overview
-
-This calculator implements a machine learning model developed to support community-based MASLD screening using five simple anthropometric-derived features. The model was trained on the UK Biobank cohort using MRI-derived proton density fat fraction (MRI-PDFF) as the imaging reference standard, and externally validated in an independent NHANES cohort.
-
-| | Internal Validation (UK Biobank) | External Validation (NHANES) |
-|---|---|---|
-| **Cohort size** | 35,548 | 5,900 |
-| **AUC** | 0.828 (95% CI: 0.818–0.839) | 0.833 |
-| **Sensitivity** | 0.776 | 0.765 |
-| **F1 Score** | 0.547 | 0.730 |
-| **Brier Score** | — | 0.170 |
-
----
-
 ## Model Details
 
 | Parameter | Value |
